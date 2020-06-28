@@ -21,7 +21,7 @@ class App extends React.Component{
   };
 
   toggleAddTodoModal(){
-    this.setState({addTodoVisible: this.state.addTodoVisible});
+    this.setState({addTodoVisible: !this.state.addTodoVisible});
   }
 
   render(){
@@ -30,7 +30,7 @@ class App extends React.Component{
         
         <Modal 
           animationType="slide" 
-          visible={this.setState.addTodoVisible}
+          visible={this.state.addTodoVisible}
           onRequestClose={() => this.toggleAddTodoModal()}
           >
            <AddListModel closeModal={() => this.toggleAddTodoModal()}/>

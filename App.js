@@ -17,7 +17,7 @@ import AddListModel from './components/AddListModal';
 class App extends React.Component{
 
   state = {
-    addTodoVisible: false
+    addTodoVisible: true
   };
 
   toggleAddTodoModal(){

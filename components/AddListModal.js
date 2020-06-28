@@ -1,9 +1,34 @@
 import React from "react";
-import {View, Text, StyleSheet, KeyboardAvoidingView, TouchableOpacity} from "react-native";
+import {
+    View, 
+    Text, 
+    StyleSheet,
+    KeyboardAvoidingView, 
+    TouchableOpacity,
+    TextInput
+} from "react-native";
 import AntIcon from "react-native-vector-icons/AntDesign";
 import colors from '../Colors';
 
 export default class AddListModal extends React.Component{
+
+    backgroundColors=["#5CD859", "#24A6D9", "#595BD9", "#8922D9", "#D159D8", "#D85963", "#D88559"];
+
+    state = {
+        name: "",
+        color: this.backgroundColors[0]
+    };
+
+    renderColors(){
+        return this.backgroundColors.map(color => {
+            return(
+                <TouchableOpacity 
+                key={color} style={[styles.colorSelect, {backgroundColor: color}]}
+                onPress={() => this.setState({color})}
+                />
+            )
+        })
+    }
 
     render(){
         return(
@@ -11,6 +36,25 @@ export default class AddListModal extends React.Component{
                <TouchableOpacity style={{position: "absolute", top: 64, right: 32}} onPress={this.props.closeModal}>
                    <AntIcon name="close" size={24} color={colors.black}/>
                </TouchableOpacity>
+
+               <View style={{alignSelf: "stretch", marginHorizontal:32}}>
+                   <Text style={styles.title}>Create Todo List</Text>
+                   
+                    <TextInput 
+                    style={styles.input} 
+                    placeholder="List Name"
+                    onChangeText={text => this.setState({name: text})}
+                    />
+
+                    <View style={{flexDirection:"row", justifyContent: "space-between", marginTop:12}}>
+                        {this.renderColors()}
+                    </View>
+
+                   <TouchableOpacity style={[styles.create , {backgroundColor: this.state.color}]}>
+                        <Text style={{color:colors.white, fontWeight: '600'}}>Create</Text>
+                    </TouchableOpacity>
+               </View>
+
            </KeyboardAvoidingView>
         );
     }
@@ -21,5 +65,36 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: "center",
         alignItems: "center"
+    },
+    title:{
+        fontSize:28,
+        fontWeight: "800",
+        color: colors.black,
+        alignSelf: "center",
+        marginBottom: 16
+    },
+
+    input:{
+        borderWidth:StyleSheet.hairlineWidth,
+        borderRadius:6,
+        marginTop:8,
+        height:50,
+        paddingHorizontal:16,
+        borderColor:colors.blue,
+        fontSize:18
+    },
+
+    create:{
+        marginTop:24,
+        height:50,
+        borderRadius:6,
+        alignItems:"center",
+        justifyContent:"center",
+    },
+
+    colorSelect:{
+        width:30,
+        height: 30,
+        borderRadius:4
     }
 });

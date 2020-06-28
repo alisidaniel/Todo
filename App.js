@@ -1,114 +1,113 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow strict-local
- */
-
 import React from 'react';
 import {
-  SafeAreaView,
   StyleSheet,
-  ScrollView,
   View,
   Text,
   StatusBar,
+  TouchableOpacity,
+  FlatList,
+  Modal
 } from 'react-native';
+import AntIcon from "react-native-vector-icons/AntDesign";
+import colors from './Colors';
+import tempData from './tempData';
+import TodoList from './components/TodoList';
+import AddListModel from './components/AddListModal';
 
-import {
-  Header,
-  LearnMoreLinks,
-  Colors,
-  DebugInstructions,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+class App extends React.Component{
 
-const App: () => React$Node = () => {
-  return (
-    <>
-      <StatusBar barStyle="dark-content" />
-      <SafeAreaView>
-        <ScrollView
-          contentInsetAdjustmentBehavior="automatic"
-          style={styles.scrollView}>
-          <Header />
-          {global.HermesInternal == null ? null : (
-            <View style={styles.engine}>
-              <Text style={styles.footer}>Engine: Hermes</Text>
-            </View>
-          )}
-          <View style={styles.body}>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Step One</Text>
-              <Text style={styles.sectionDescription}>
-                Edit <Text style={styles.highlight}>App.js</Text> to change this
-                screen and then come back to see your edits.
+  state = {
+    addTodoVisible: false
+  };
+
+  toggleAddTodoModal(){
+    this.setState({addTodoVisible: this.state.addTodoVisible});
+  }
+
+  render(){
+    return(
+      <View style={styles.container}>
+        
+        <Modal 
+          animationType="slide" 
+          visible={this.setState.addTodoVisible}
+          onRequestClose={() => this.toggleAddTodoModal()}
+          >
+           <AddListModel closeModal={() => this.toggleAddTodoModal()}/>
+
+        </Modal>
+
+          <View style={{flexDirection:"row"}}>
+              <View style={styles.divider}/>
+              <Text style={styles.title}>
+                  Todo <Text style={{fontWeight: "300", color: colors.blue}}>List</Text>
               </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>See Your Changes</Text>
-              <Text style={styles.sectionDescription}>
-                <ReloadInstructions />
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Debug</Text>
-              <Text style={styles.sectionDescription}>
-                <DebugInstructions />
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Learn More</Text>
-              <Text style={styles.sectionDescription}>
-                Read the docs to discover what to do next:
-              </Text>
-            </View>
-            <LearnMoreLinks />
+
+              <View style={styles.divider}/>
           </View>
-        </ScrollView>
-      </SafeAreaView>
-    </>
-  );
-};
+
+          <View style={{marginVertical:40}}>
+              <TouchableOpacity style={styles.addList} onPress={() => this.toggleAddTodoModal()}>
+                  <AntIcon name="plus" size={16} color={colors.blue}/>
+              </TouchableOpacity>
+
+              <Text style={styles.add}>Add List</Text>
+          </View>
+
+          <View style={{height:275, paddingLeft:32}}>
+              <FlatList 
+                data={tempData} 
+                keyExtractor={item => item.name} 
+                horizontal={true}
+                showsHorizontalScrollIndicator={false}
+                renderItem={({item}) => (
+                    <TodoList list={item} />
+                )}
+              />
+          </View>
+      </View>
+    )
+  }
+}
 
 const styles = StyleSheet.create({
-  scrollView: {
-    backgroundColor: Colors.lighter,
+  container:{
+    flex: 1,
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center"
   },
-  engine: {
-    position: 'absolute',
-    right: 0,
+
+  divider:{
+    backgroundColor: colors.lightblue,
+    height: 1,
+    flex: 1,
+    alignSelf: "center"
   },
-  body: {
-    backgroundColor: Colors.white,
+
+  title:{
+    fontSize: 38,
+    fontWeight: "800",
+    color: colors.black,
+    paddingHorizontal: 64
   },
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+
+  addList:{
+    borderWidth: 2,
+    borderColor: colors.lightblue,
+    borderRadius: 4,
+    padding: 16,
+    alignItems: "center",
+    justifyContent: "center"
   },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: Colors.black,
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-    color: Colors.dark,
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-  footer: {
-    color: Colors.dark,
-    fontSize: 12,
-    fontWeight: '600',
-    padding: 4,
-    paddingRight: 12,
-    textAlign: 'right',
-  },
+
+  add:{
+    color: colors.blue,
+    fontWeight: "600",
+    fontSize: 14,
+    marginTop: 8
+  }
+
 });
 
 export default App;

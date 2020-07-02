@@ -6,20 +6,44 @@ import {
   StatusBar,
   TouchableOpacity,
   FlatList,
-  Modal
+  Modal,
+  ActivityIndicator
 } from 'react-native';
 import AntIcon from "react-native-vector-icons/AntDesign";
 import colors from './Colors';
 import tempData from './tempData';
 import TodoList from './components/TodoList';
 import AddListModel from './components/AddListModal';
-
+import Fire from "./fire";
 class App extends React.Component{
 
   state = {
     addTodoVisible: false,
-    lists: tempData
+    lists: [],
+    user: {},
+    loading: true
+
   };
+
+  componentDidMount(){
+    firebase = new Fire((error, user) => {
+      if (error){
+        return alert("Something went wrong");
+      }
+
+      firebase.getLists(lists => {
+        this.setState({lists, user}, () => {
+          this.setState({loading: false});
+        });
+      });
+
+      this.setState({user});
+    });
+  }
+
+  componentWillUnmount(){
+    firebase.detach();
+  }
 
   toggleAddTodoModal(){
     this.setState({addTodoVisible: !this.state.addTodoVisible});
@@ -30,18 +54,28 @@ class App extends React.Component{
   }
   
   addList = list => {
-    this.setState({lists:[...this.state.lists, { ...list, id:this.state.lists.length + 1, todos: []}]});
+    firebase.addList({
+      name: list.name,
+      color: list.color,
+      todos: []
+    });
   };
 
   updateList = list => {
-    this.setState({
-      lists: this.state.lists.map(item => {
-        return item.id === list.id ? list : item;
-      })
-    })
+
+    firebase.updateList(list);
   }
 
   render(){
+
+    if(this.state.loading){
+      return (
+        <View style={styles.container}>
+            <ActivityIndicator size="large" color={colors.blue}/>
+        </View>
+      );
+    }
+
     return(
       <View style={styles.container}>
         
@@ -54,6 +88,9 @@ class App extends React.Component{
 
         </Modal>
 
+          <View>
+              <Text>User: {this.state.user.uid}</Text>
+          </View>
           <View style={{flexDirection:"row"}}>
               <View style={styles.divider}/>
               <Text style={styles.title}>
@@ -74,7 +111,7 @@ class App extends React.Component{
           <View style={{height:275, paddingLeft:32}}>
               <FlatList 
                 data={this.state.lists} 
-                keyExtractor={item => item.name} 
+                keyExtractor={item => item.id.toString()} 
                 horizontal={true}
                 showsHorizontalScrollIndicator={false}
                 renderItem={({item}) => this.renderList(item)}
